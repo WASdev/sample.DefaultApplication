@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="DefaultApplication server">
+
+    <!-- Enable features -->
+    <featureManager>
+        <feature>javaee-7.0</feature>
+    </featureManager>
+
+    <!-- Encoded password can be generated using bin/securityUtility -->
+    <keyStore password="change1me"/>
+
+    <basicRegistry id="basic" realm="BasicRealm">
+        <user name="user1" password="change1me"/>
+        <group name="All Role">
+        	<member name="user1"/>
+        </group>
+    </basicRegistry>
+
+    <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
+    <httpEndpoint id="defaultHttpEndpoint"
+                  httpPort="9080"
+                  httpsPort="9443" />
+    
+    <enterpriseApplication id="DefaultApplication" location="DefaultApplication.ear" name="DefaultApplication"/>
+    
+    <jdbcDriver id="DerbyEmbedded" libraryRef="DerbyLib" />
+    <library id="DerbyLib" filesetRef="DerbyFileset" />
+    <fileset id="DerbyFileset"
+             dir="${shared.resource.dir}"
+             includes="derby-10.13.1.1.jar" />
+
+    <dataSource id="DefaultDatasource"
+                jndiName="DefaultDatasource"
+                jdbcDriverRef="DerbyEmbedded">
+        <properties.derby.embedded 
+                databaseName="${server.config.dir}/resources/DefaultDB"
+                createDatabase="false" />
+    </dataSource>
+
+</server>

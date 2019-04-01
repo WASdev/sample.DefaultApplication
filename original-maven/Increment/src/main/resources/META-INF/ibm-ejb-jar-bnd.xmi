@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejbbnd:EJBJarBinding xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ejbbnd="ejbbnd.xmi" xmlns:ejb="ejb.xmi" xmi:id="ejb-jar_ID_Bnd" currentBackendId="DERBY_V10">
+  <ejbJar href="META-INF/ejb-jar.xml#ejb-jar_ID"/>
+  <ejbBindings xmi:id="EnterpriseBeanBinding_1" jndiName="Increment">
+    <enterpriseBean xmi:type="ejb:ContainerManagedEntity" href="META-INF/ejb-jar.xml#ContainerManagedEntity_1"/>
+    <cmpConnectionFactory xmi:id="CMPConnectionFactoryBinding_1" jndiName="DefaultDatasource" resAuth="Per_Connection_Factory"/>
+  </ejbBindings>
+  <defaultCMPConnectionFactory xmi:id="CMPConnectionFactoryBinding_2" jndiName="DefaultDatasource" resAuth="Per_Connection_Factory"/>
+</ejbbnd:EJBJarBinding>

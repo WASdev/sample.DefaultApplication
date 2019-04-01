@@ -1,0 +1,11 @@
+target/
+.classpath
+.factorypath
+.project
+.settings/
+.DS_Store
+.apt_generated/
+.gradle/
+build/
+
+/.apt_generated_tests/
