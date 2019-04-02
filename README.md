@@ -31,7 +31,7 @@ Before focusing on the code, we need to be able to build it. This application is
 
 Modernizing applications often includes the need to modernize how they are built. The Java source is included in the EAR inside of DefaultWebApplication_src.jar and Increment_src.jar. Expanding the JAR and WAR files inside the EAR allows us to recover the deployment descriptors and JSP files.
 
-Here is the structure of application source:
+Here is the structure of [original application source](./original):
 
 ```
 me@us.ibm.com@DefaultApplication original (master) $ tree .
@@ -95,7 +95,7 @@ At this point, no code changes have been made, so we created a top level Default
 * DefaultWebApplication
 * Increment
 
-The first step is to focus on creating the project structure and getting it to build with no code included. Then, we can take the source code from the folders above and drop them into the correct Maven file structure:
+The first step is to focus on creating the project structure and getting it to build with no code included. Then, we can take the source code from the folders above and drop them into the correct Maven file structure. You will find this version of the code in the [original-maven folder](./original-maven).
 
 ```
 me@us.ibm.com@DefaultApplication original-maven (master) $ tree .
@@ -389,6 +389,61 @@ The slash was added before `auth_error.jsp`. Without it, the JSP file is not fou
         <error-code>401</error-code>
         <location>/auth_error.jsp</location>
     </error-page>
+```
+
+## Final Code
+
+Take a look at the find the final code in the [modernized folder](./modernized). Here is the code structure after all the updates were made:
+
+```
+cthigh@us.ibm.com@Cindys-MacBook-Pro modernized (master) $ tree .
+.
+├── DefaultApplication-ear
+│   ├── pom.xml
+│   └── src
+│       ├── main
+│       │   ├── application
+│       │   │   └── META-INF
+│       │   │       ├── application.xml
+│       │   │       ├── ibm-application-bnd.xml
+│       │   │       └── was.policy
+│       │   ├── liberty
+│       │   │   └── config
+│       │   │       └── server.xml
+│       │   └── resources
+│       │       └── DefaultDB.zip
+│       └── test
+│           └── java
+│               └── wasdev
+│                   └── DefaultApplication
+│                       └── it
+│                           └── EndpointIT.java
+├── DefaultWebApplication
+│   ├── pom.xml
+│   └── src
+│       └── main
+│           ├── java
+│           │   ├── HitCount.java
+│           │   ├── SnoopServlet.java
+│           │   └── com
+│           │       └── ibm
+│           │           └── defaultapplication
+│           │               ├── Increment.java
+│           │               └── IncrementSSB.java
+│           ├── resources
+│           │   └── META-INF
+│           │       └── persistence.xml
+│           └── webapp
+│               ├── HitCount.jsp
+│               ├── META-INF
+│               │   └── MANIFEST.MF
+│               ├── WEB-INF
+│               │   ├── beans.xml
+│               │   └── web.xml
+│               ├── auth_error.jsp
+│               ├── banner.gif
+│               └── index.html
+└── pom.xml
 ```
 
 ## Running in Liberty
