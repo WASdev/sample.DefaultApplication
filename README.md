@@ -9,8 +9,8 @@ So here we go, let's modernize DefaultApplication. We will start with the report
 The [migration report](./report/DefaultApplication.ear_MigrationReport.html) tells us to focus on:
 
 * Entity Enterprise JavaBeans (EJB)
-* EJB lookup strings
 * Transaction propagation
+* EJB lookup strings
 * WebSphere Servlet API
 
 ![](./images/migration_report.png)
@@ -19,7 +19,7 @@ The biggest challenge for running DefaultApplication on Liberty is Entity EJB.  
 
 ## Setup
 
-The article uses Eclipse with additional tools installed. Here is what you need if you want to follow along:  
+This article uses Eclipse with additional tools installed. Here is what you need if you want to follow along:  
 * Eclipse for Java EE Developers (I happen to be using Photon, but you can get the latest.)
 * Dali Java Persistence Tools - Available from the Eclipse update site
 * WebSphere Application Server Migration Toolkit - Available from Eclipse Marketplace
@@ -86,7 +86,7 @@ me@us.ibm.com@DefaultApplication original (master) $ tree .
 
 For this example, we are using Maven. Using the Liberty EAR archetype, we can create a new project skeleton to copy the original code. liberty-archetype-ear also shows you how to build and test on a Liberty runtime.
 
-To create the project in Eclipse, go to `File > New > Maven project` to build project structure. On the second page of the wizard, you can select the archetype to use. If the `liberty-archetype-ear` does not show up in your list, you can get the get the information from this repository URL: https://mvnrepository.com/artifact/net.wasdev.wlp.maven/liberty-archetype-ear.
+To create the project in Eclipse, go to `File > New > Maven project` to build project structure. On the second page of the wizard, you can select the archetype to use. If the `liberty-archetype-ear` does not show up in your list, you can get the information from this repository URL: https://mvnrepository.com/artifact/net.wasdev.wlp.maven/liberty-archetype-ear.
 
 ![](./images/new_maven_project.png)
 
@@ -156,7 +156,7 @@ me@us.ibm.com@DefaultApplication original-maven (master) $ tree .
 └── pom.xml
 ```
 
-In its original file structure, it wasn't easy to build the application. Now we have a good opportunity to see what we have, what's compiling, and what’s missing in order to understand the application better. We can also use the WebSphere Application Migration Toolkit Eclipse plugin to view the same migration recommendations using the source code that were reported by the binary scanner.  This allows you scan the code and directly link the issue with the code. The same help is built into the Eclipse tool that is available in the binary scanner report.
+In its original file structure, it wasn't easy to build the application. Now we have a good opportunity to see what we have, what's compiling, and what’s missing in order to understand the application better. We can also use the [WebSphere Application Migration Toolkit Eclipse plugin](https://developer.ibm.com/wasdev/downloads/#asset/tools-WebSphere_Application_Server_Migration_Toolkit) to view the same migration recommendations using the source code that were reported by the binary scanner.  This allows you to scan the code and directly link the issue with the code. The same help is built into the Eclipse tool that is available in the binary scanner report.
 
 ![](./images/wamt-migration.png)
 
@@ -289,7 +289,7 @@ By removing the Entity EJBs and by using annotations in the modernized code, the
 
 The application still has a web.xml with security constraint definitions, but much of the content was removed when annotations were added to the servlets.  
 
-For example, in the original [web.xml](./original/dd/DefaultWebApplication/web.xml) content like
+For example, in the original [web.xml](./original/dd/DefaultWebApplication/web.xml) the `servlet` and `servlet-mapping` definitions can be removed:
 
 ```
 <servlet id="Servlet_1">
@@ -306,7 +306,7 @@ For example, in the original [web.xml](./original/dd/DefaultWebApplication/web.x
 </servlet-mapping>
 ```
 
-Is added to SnoopServlet.java in annotations:
+The information is added to `SnoopServlet.java` in annotations:
 
 ```
 @WebServlet(name="Snoop Servlet",
@@ -319,7 +319,7 @@ public class SnoopServlet extends HttpServlet
 
 Since the ibm-application-bnd.xmi file is short, I manually migrated the application binding file from xmi to xml format. The xmi format is understood by later versions of WebSphere and Liberty, but if we were going to modernize, we may as well update the remaining bindings file to use the newer format. In general, the deployment descriptor specification levels were updated to Jave EE 6. If you have many xmi binding files and want to update them, Rational Application Developer has tools to update WebSphere bindings and extensions XMI files to the XML format.
 
-This is contents of the orginal [ibm-application-bnd.xmi](./original/dd/ibm-application-bnd.xmi) file:
+This is the contents of the orginal [ibm-application-bnd.xmi](./original/dd/ibm-application-bnd.xmi) file:
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -395,7 +395,7 @@ This was a problem with the existing application on both traditional WebSphere a
 
 ## Final Code
 
-Take a look at the find the final code in the [modernized folder](./modernized). Here is the code structure after all the updates were made:
+Take a look at the final code in the [modernized folder](./modernized). Here is the code structure after all the updates were made:
 
 ```
 cthigh@us.ibm.com@Cindys-MacBook-Pro modernized (master) $ tree .
@@ -474,7 +474,7 @@ If you also click the `Hit Count Servlet` link, you can experiment calling the I
 
 EJB isn't what is used to be - and that's a good thing. Using EJB 3, JPA, annotations, and injection, the DefaultApplication was made much simpler and easier to use and understand. You can add EJB code to web modules without requiring an EJB JAR.
 
-You probably cannot modernize all of your applications, and you might be thinking "if it's not broke, why fix it?" Incremental changes that simplify your applications and thus reduce your support costs might be a good thing to consider, and we are sure you will love using Liberty.
+It might not be possible to modernize all of your applications, and you might be thinking "if it's not broken, why fix it?" Incremental changes that simplify your applications and thus reduce your support costs is worth considering. Also, we are sure you will love using Liberty.
 
 As this example shows, modernizing applications means multiple things. You can modernize how you build it, how you write it, and where you run it.
 
