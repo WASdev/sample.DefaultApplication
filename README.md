@@ -1,10 +1,10 @@
-# Migrating DefaultApplication
+# Migrating the traditional WebSphere DefaultApplication.ear
 
 Sometimes applications last longer than we expect.  DefaultApplication.ear has been shipping as a WebSphere Application Server sample program for many releases. Classes in the application date back as far as 1997. We have seen [Transformation Advisor](https://www.ibm.com/us-en/marketplace/cloud-transformation-advisor) system scans of WebSphere cells where DefaultApplication is the only complex application in the cell. That’s pretty embarrassing, so it was time for us to do some application modernization ourselves. This article shows the process we went through to update DefaultApplication so that it uses more modern programming models and so that it can run on Liberty or tradition WebSphere.
 
 The updated DefaultApplication ships with traditional WebSphere Application Server V9.0.0.11. If you install a new profile and install the sample applications, you will see the new version of DefaultApplication. If you already have DefaultApplication installed and apply the fix pack, it will not be automatically updated. You can update the application with the version shipped in the `installableApps` folder. 
 
-So here we go, let's modernize DefaultApplication. We start with the report produced by the WebSphere [binary scanner](https://developer.ibm.com/wasdev/downloads/#asset/tools-Migration_Toolkit_for_Application_Binaries) that tells us what to consider when moving an application from traditional WebSphere to Liberty. Also in 9.0.0.11, check out Liberty advisor in the enterprise applications collection page to easily produce a migration report for your applications. 
+So here we go, let's modernize DefaultApplication. We will start with the report produced by the WebSphere [binary scanner](https://developer.ibm.com/wasdev/downloads/#asset/tools-Migration_Toolkit_for_Application_Binaries) that tells us what to consider when moving an application from traditional WebSphere to Liberty. In WebSphere Application Server V9.0.0.11, you can easily produce a migration report for your applications from the enterprise applications collection page using the new Liberty advisor feature.
 
 The [migration report](./report/DefaultApplication.ear_MigrationReport.html) tells us to focus on:
 
@@ -15,11 +15,11 @@ The [migration report](./report/DefaultApplication.ear_MigrationReport.html) tel
 
 ![](./images/migration_report.png)
 
-The big show stopper for running DefaultApplication on Liberty is Entity EJB.  The Entity EJB Java EE specification was deprecated in favor of the Java Persistence API (JPA), and Entity EJBs are not supported on Liberty.
+The show stopper for running DefaultApplication on Liberty is Entity EJB.  The Entity EJB Java EE specification was deprecated in favor of the Java Persistence API (JPA), and Entity EJBs are not supported on Liberty.
 
 ## Setup
 
-The article uses Eclipse with additional tools installed:  
+The article uses Eclipse with additional tools installed. Here is what you need if you want to follow along:  
 * Eclipse for Java EE Developers (I happen to be using Photon, but you can get the latest.)
 * Dali Java Persistence Tools - Available from the Eclipse update site
 * WebSphere Application Server Migration Toolkit - available from Eclipse Marketplace
@@ -91,11 +91,9 @@ To create the project in Eclipse, go to `File > New > Maven project` to build pr
 ![](./images/new_maven_project.png)
 
 At this point, no code changes have been made, so we created a top level DefaultApplication parent project that contains three child Maven projects that represents the original code.
-* Increment
-* DefaultWebApplication
 * DefaultApplication-ear
-
-Eventually we get rid of the Increment EJB JAR module, but it is included for now.
+* DefaultWebApplication
+* Increment
 
 The first step is to focus on creating the project structure and getting it to build with no code included. Then, we can take the source code from the folders above and drop them into the correct Maven file structure:
 
@@ -165,7 +163,7 @@ In its original file structure, it wasn't easy to build the application. Now we 
 
 ## Migrating Entity EJBs to JPA
 
-Java Persistence API (JPA) is a recommended replacement for EJB 2.x Entity EJB Beans. The JPA Entity provides the interface to the database table. We plan to use the DefaultApplication database as-is (there is only one table), so we just needed to generate the JPA Entity class. We also chose to use a stateless session EJB as the injection mechanism for the JPA entity and to contain the application increment code for the persistence example.
+Java Persistence API (JPA) is the recommended replacement for EJB 2.x Entity EJB Beans. The JPA Entity provides the interface to the database table. We plan to use the DefaultApplication database as-is (there is only one table), so we just needed to generate the JPA Entity class. We also chose to use a stateless session EJB as the injection mechanism for the JPA entity and to contain the application increment code for the persistence example.
 
 The [Eclipse Dali Java Persistence Tools](https://www.eclipse.org/webtools/dali/docs/3.2/user_guide/toc.htm) are useful for creating the JPA Entity class.  Starting from the section for [Generating entities from tables](https://www.eclipse.org/webtools/dali/docs/3.2/user_guide/tasks006.htm), follow the steps to create a new JPA project using a Liberty runtime and then generate the entity from the DefaultDB. You can unzip the DefaultDB.zip found in the [original/database folder](./original/database). Refer to the Dali guides for the full details. Some Liberty-specific details are provided here.
 
@@ -177,7 +175,7 @@ On the next page, choose to add a connection.
 
 ![](./images/JPA_derby_connection.png)
 
-Configure a new Derby connection that points to the unzipped DefaultDB. You can test the connection to the database here to make sure everything is working OK.
+Configure a new Derby connection that points to the unzipped DefaultDB folder. You can test the connection to the database here to make sure everything is working OK.
 
 ![](./images/new_derby_connection.png)
 
@@ -185,7 +183,7 @@ From the root of the JPA project, right click and select `JPA Tools > Generate E
 
 ![](./images/JPA_generate_entities_from_tables.png)
 
-Based on the connection to the database already created, the INCREMENT table is displayed to select. Go through the remaining pages of the wizard. I mainly took the defaults on each page, including the package name but made a few adjustments later.
+Based on the connection to the database already created, the INCREMENT table is displayed. Select it, and go through the remaining pages of the wizard. I mainly took the defaults on each page, including the package name but made a few adjustments later.
 
  ![](./images/JPA_custom_entity.png)
 
@@ -281,7 +279,7 @@ In the new code, we simply inject the EJB reference rather than performing a loo
    private IncrementSSB inc;
 ```
 
-If we had continued to use lookup strings, we would have changed it to use the `java:` namespace recognized by Liberty.
+If we had continued to use lookup strings, we would changed it to use the `java:` namespace recognized by Liberty.
 
 ## Migrating deployment descriptors
 
@@ -319,7 +317,7 @@ public class SnoopServlet extends HttpServlet
 
 #### ibm-application-bnd
 
-I manually migrated the application binding file from xmi to xml format. The xmi format is understood by later versions of WebSphere and Liberty, but if we were going to modernize, we may as well update the remaining bindings file to use the newer format. In general, the deployment descriptor spec levels were updated to Jave EE 6. If you have many xmi binding files and want to update them, Rational Application Developer has tools to update WebSphere bindings and extensions XMI files to the XML format.
+Since the ibm-application-bnd.xmi file is short, I manually migrated the application binding file from xmi to xml format. The xmi format is understood by later versions of WebSphere and Liberty, but if we were going to modernize, we may as well update the remaining bindings file to use the newer format. In general, the deployment descriptor specification levels were updated to Jave EE 6. If you have many xmi binding files and want to update them, Rational Application Developer has tools to update WebSphere bindings and extensions XMI files to the XML format.
 
 This is contents of the orginal [ibm-application-bnd.xmi](./original/dd/ibm-application-bnd.xmi) file:
 
@@ -338,7 +336,7 @@ This is contents of the orginal [ibm-application-bnd.xmi](./original/dd/ibm-appl
 </applicationbnd:ApplicationBinding>
 ```
 
-It is replaced by the ibm-application-bnd.xml file:
+It is replaced by the [ibm-application-bnd.xml](./modernized/DefaultApplication-ear/src/main/application/META-INF/ibm-application-bnd.xml) file:
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -367,7 +365,7 @@ You will notice that we added an empty beans.xml for CDI. This file is not neces
 
 The migration scan also reported that `The WebSphere Servlet API was superseded by a newer implementation`. Indeed the Hello servlet made use of the `com.ibm.servlet.PageListServlet` classes that are not available in Liberty.
 
-Sometimes when you modernize your applications, you have to prune the parts that provide little value. This section of the application was showcasing a deprecated, proprietary API and the use does not follow modern best practices, and there are already so many Hello examples available.
+Sometimes when you modernize your applications, you have to prune the parts that provide little value. This section of the application was showcasing a deprecated, proprietary API and the use does not follow modern best practices, so we removed it. There are plenty Hello examples already available.
 
 ## Other issues
 
@@ -384,7 +382,7 @@ Originally, the code looks like:
     </error-page>
 ```
 
-The slash was added here:
+The slash was added before `auth_error.jsp`. Without it, the JSP file is not found.
 
 ```
     <error-page id="ErrorPage_1">
@@ -395,7 +393,7 @@ The slash was added here:
 
 ## Running in Liberty
 
-Import the code found in the [modernized](./modernized) folder to Eclipse as an existing Maven project.
+To see the application build and run in Liberty, import the code found in the [modernized](./modernized) folder to Eclipse as an existing Maven project.
 
 ![](./images/import-maven-project.png)
 
@@ -403,23 +401,23 @@ If you have the WebSphere Developer Tools for Liberty installed, the project wil
 
 ![](./images/WDT-liberty.png)
 
-Select `Yes` and continue importing the project.  The Maven build will automatically run which downloads Liberty, builds the EAR, deploys the application to Liberty, and runs any tests.
+Select `Yes` and continue importing the project.  The Maven build will run automatically. It downloads Liberty, builds the EAR, deploys the application to Liberty, and runs the test.
 
-Go to the `Servers` view and right click `DefaultApplication-ear` to start the server. In Eclipse, the link in the console message `[AUDIT   ] CWWKT0016I: Web application available (default_host): http://localhost:9080/`.
+Go to the `Servers` view and right click `DefaultApplication-ear` to start the server. In Eclipse, the link in the console message `[AUDIT   ] CWWKT0016I: Web application available (default_host): http://localhost:9080/` to open the application.
 
-If you click Snoop Servlet, you will be prompted for a user name and password the first time in. A sample user name and password are configured in the [server.xml](./modernized/DefaultApplication-ear/src/main/liberty/config).
+If you click Snoop Servlet, you will be prompted for a user name and password the first time. A sample user name and password are configured in the [server.xml](./modernized/DefaultApplication-ear/src/main/liberty/config/server.xml).
 
 ![](./images/snoop-servlet-prompt.png)
 
-If you also click the `Hit Count Servlet` link, you can experiment calling the increment using JPA Persistence.
+If you also click the `Hit Count Servlet` link, you can experiment calling the Increment counter using JPA Persistence.
 
 ![](./images/hit-count-jpa.png)
 
 ## Summary
 
-EJB isn't what is used to be - and that's a good thing. Using EJB 3, JPA, annotations, and injection, the DefaultApplication was made much simpler and easier to understand. You can add EJB code to web modules without requiring an EJB JAR.
+EJB isn't what is used to be - and that's a good thing. Using EJB 3, JPA, annotations, and injection, the DefaultApplication was made much simpler and easier to use and understand. You can add EJB code to web modules without requiring an EJB JAR.
 
-You probably cannot modernize all of your applications, and you might be thinking "if it's not broke, ..." Incremental changes that simplify your applications and thus reduce your support costs might be a good thing to consider, and we are sure you will love using Liberty.
+You probably cannot modernize all of your applications, and you might be thinking "if it's not broke, why fix it?" Incremental changes that simplify your applications and thus reduce your support costs might be a good thing to consider, and we are sure you will love using Liberty.
 
 As this example shows, modernizing applications means multiple things. You can modernize how you build it, how you write it, and where you run it.
 
