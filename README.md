@@ -1,6 +1,6 @@
 # Migrating the traditional WebSphere DefaultApplication.ear
 
-Sometimes applications last longer than we expect.  DefaultApplication.ear has been shipping as a WebSphere Application Server sample program for many releases. Classes in the application date back as far as 1997. We have seen [Transformation Advisor](https://ibm.biz/cloudta) system scans of WebSphere cells where DefaultApplication is the only complex application in the cell. That’s pretty embarrassing, so it was time for us to do some application modernization ourselves. This article shows the process we went through to update DefaultApplication so that it uses more modern programming models and so that it can run on Liberty or tradition WebSphere.
+Sometimes applications last longer than we expect.  DefaultApplication.ear has been shipping as a WebSphere Application Server sample program for many releases. Classes in the application date back as far as 1997. We have seen [Transformation Advisor](https://ibm.biz/cloudta) system scans of WebSphere cells where DefaultApplication is the only complex application in the cell. That’s pretty embarrassing, so it was time for us to do some application modernization ourselves. This article shows the process we went through to update DefaultApplication so that it uses more modern programming models and so that it can run on Liberty or traditional WebSphere.
 
 The updated DefaultApplication ships with traditional WebSphere Application Server V9.0.0.11. If you install a new profile and install the sample applications, you will see the new version of DefaultApplication. If you already have DefaultApplication installed and apply the fix pack, it will not be automatically updated. You can update the application with the version shipped in the `installableApps` folder. 
 
@@ -22,7 +22,7 @@ The biggest challenge for running DefaultApplication on Liberty is Entity EJB.  
 The article uses Eclipse with additional tools installed. Here is what you need if you want to follow along:  
 * Eclipse for Java EE Developers (I happen to be using Photon, but you can get the latest.)
 * Dali Java Persistence Tools - Available from the Eclipse update site
-* WebSphere Application Server Migration Toolkit - available from Eclipse Marketplace
+* WebSphere Application Server Migration Toolkit - Available from Eclipse Marketplace
 * WebSphere Developer Tools for Liberty - Available from Eclipse Marketplace
 
 Before focusing on the code, we need to be able to build it. This application is currently being built using internal Ant build tools which we are not going to use going forward. We need to start by getting the code in a format that can be used by modern build tools.
@@ -90,7 +90,7 @@ To create the project in Eclipse, go to `File > New > Maven project` to build pr
 
 ![](./images/new_maven_project.png)
 
-At this point, no code changes have been made, so we created a top level DefaultApplication parent project that contains three child Maven projects that represents the original code.
+At this point, no code changes have been made, so we created a top level DefaultApplication parent project that contains three child Maven projects that represent the original code.
 * DefaultApplication-ear
 * DefaultWebApplication
 * Increment
@@ -365,7 +365,7 @@ You will notice that we added an empty beans.xml for CDI. This file is not neces
 
 The migration scan also reported that `The WebSphere Servlet API was superseded by a newer implementation`. Indeed the Hello servlet made use of the `com.ibm.servlet.PageListServlet` classes that are not available in Liberty.
 
-Sometimes when you modernize your applications, you have to prune the parts that provide little value. This section of the application was showcasing a WebSphere deprecated, proprietary API and the use does not follow modern best practices, so we removed it. There are plenty Hello examples already available.
+Sometimes when you modernize your applications, you have to prune the parts that provide little value. This section of the application was showcasing a WebSphere deprecated, proprietary API and the use does not follow modern best practices, so we removed it. There are plenty of Hello examples already available.
 
 ## Other issues
 
@@ -460,7 +460,7 @@ If you have the WebSphere Developer Tools for Liberty installed, the project wil
 
 Select `Yes` and continue importing the project.  The Maven build will run automatically. It downloads Liberty, builds the EAR, deploys the application to Liberty, and runs the test.
 
-Go to the `Servers` view and right click `DefaultApplication-ear` to start the server. In Eclipse, the link in the console message `[AUDIT   ] CWWKT0016I: Web application available (default_host): http://localhost:9080/` to open the application.
+Go to the `Servers` view and right click `DefaultApplication-ear` to start the server. In the Eclipse console view, use the link in the message `[AUDIT   ] CWWKT0016I: Web application available (default_host): http://localhost:9080/` to open the application.
 
 If you click Snoop Servlet, you will be prompted for a user name and password the first time. A sample user name and password are configured in the [server.xml](./modernized/DefaultApplication-ear/src/main/liberty/config/server.xml).
 
