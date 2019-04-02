@@ -1,6 +1,6 @@
 # Migrating the traditional WebSphere DefaultApplication.ear
 
-Sometimes applications last longer than we expect.  DefaultApplication.ear has been shipping as a WebSphere Application Server sample program for many releases. Classes in the application date back as far as 1997. We have seen [Transformation Advisor](https://www.ibm.com/us-en/marketplace/cloud-transformation-advisor) system scans of WebSphere cells where DefaultApplication is the only complex application in the cell. That’s pretty embarrassing, so it was time for us to do some application modernization ourselves. This article shows the process we went through to update DefaultApplication so that it uses more modern programming models and so that it can run on Liberty or tradition WebSphere.
+Sometimes applications last longer than we expect.  DefaultApplication.ear has been shipping as a WebSphere Application Server sample program for many releases. Classes in the application date back as far as 1997. We have seen [Transformation Advisor](https://ibm.biz/cloudta) system scans of WebSphere cells where DefaultApplication is the only complex application in the cell. That’s pretty embarrassing, so it was time for us to do some application modernization ourselves. This article shows the process we went through to update DefaultApplication so that it uses more modern programming models and so that it can run on Liberty or tradition WebSphere.
 
 The updated DefaultApplication ships with traditional WebSphere Application Server V9.0.0.11. If you install a new profile and install the sample applications, you will see the new version of DefaultApplication. If you already have DefaultApplication installed and apply the fix pack, it will not be automatically updated. You can update the application with the version shipped in the `installableApps` folder. 
 
@@ -15,7 +15,7 @@ The [migration report](./report/DefaultApplication.ear_MigrationReport.html) tel
 
 ![](./images/migration_report.png)
 
-The show stopper for running DefaultApplication on Liberty is Entity EJB.  The Entity EJB Java EE specification was deprecated in favor of the Java Persistence API (JPA), and Entity EJBs are not supported on Liberty.
+The biggest challenge for running DefaultApplication on Liberty is Entity EJB.  The Entity EJB Java EE specification was deprecated in favor of the Java Persistence API (JPA), and Entity EJBs are not supported on Liberty.
 
 ## Setup
 
@@ -279,7 +279,7 @@ In the new code, we simply inject the EJB reference rather than performing a loo
    private IncrementSSB inc;
 ```
 
-If we had continued to use lookup strings, we would changed it to use the `java:` namespace recognized by Liberty.
+If we had continued to use lookup strings, we would changed it to use a `java:[scope]` namespace (`java:global`, `java:app`, or `java:module`) as defined by the Java EE 6 specification.  
 
 ## Migrating deployment descriptors
 
@@ -365,11 +365,11 @@ You will notice that we added an empty beans.xml for CDI. This file is not neces
 
 The migration scan also reported that `The WebSphere Servlet API was superseded by a newer implementation`. Indeed the Hello servlet made use of the `com.ibm.servlet.PageListServlet` classes that are not available in Liberty.
 
-Sometimes when you modernize your applications, you have to prune the parts that provide little value. This section of the application was showcasing a deprecated, proprietary API and the use does not follow modern best practices, so we removed it. There are plenty Hello examples already available.
+Sometimes when you modernize your applications, you have to prune the parts that provide little value. This section of the application was showcasing a WebSphere deprecated, proprietary API and the use does not follow modern best practices, so we removed it. There are plenty Hello examples already available.
 
 ## Other issues
 
-During the course of the modernization, other issues were found along the way.
+During the course of the modernization, other issues were found and fixed along the way.
 
 For example, the `error-page` configuration for `location` needed a leading slash to be found properly.
 
@@ -390,6 +390,8 @@ The slash was added before `auth_error.jsp`. Without it, the JSP file is not fou
         <location>/auth_error.jsp</location>
     </error-page>
 ```
+
+This was a problem with the existing application on both traditional WebSphere and Liberty. In the error case, a generic 401 error was being displayed instead of the `auth_error.jsp`.
 
 ## Final Code
 
