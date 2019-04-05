@@ -1,4 +1,4 @@
-# Migrating the traditional WebSphere DefaultApplication.ear
+# Modernizing the traditional WebSphere DefaultApplication.ear
 
 Sometimes applications last longer than we expect.  DefaultApplication.ear has been shipping as a WebSphere Application Server sample program for many releases. Classes in the application date back as far as 1997. We have seen [Transformation Advisor](https://ibm.biz/cloudta) system scans of WebSphere cells where DefaultApplication is the only complex application in the cell. That’s pretty embarrassing, so it was time for us to do some application modernization ourselves. This article shows the process we went through to update DefaultApplication so that it uses more modern programming models and so that it can run on Liberty or traditional WebSphere.
 
