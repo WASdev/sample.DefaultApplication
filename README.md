@@ -4,7 +4,7 @@ Sometimes applications last longer than we expect.  DefaultApplication.ear has b
 
 The updated DefaultApplication ships with traditional WebSphere Application Server V9.0.0.11. If you install a new profile and install the sample applications, you will see the new version of DefaultApplication. If you already have DefaultApplication installed and apply the fix pack, it will not be automatically updated. You can update the application with the version shipped in the `installableApps` folder. 
 
-So here we go, let's modernize DefaultApplication. We will start with the report produced by the WebSphere [binary scanner](https://developer.ibm.com/wasdev/downloads/#asset/tools-Migration_Toolkit_for_Application_Binaries) that tells us what to consider when moving an application from traditional WebSphere to Liberty. In WebSphere Application Server V9.0.0.11, you can easily produce a migration report for your applications from the enterprise applications collection page using the new Liberty advisor feature.
+So here we go, let's modernize DefaultApplication. We will start with the report produced by the WebSphere [binary scanner](https://developer.ibm.com/wasdev/downloads/#asset/tools-Migration_Toolkit_for_Application_Binaries) that tells us what to consider when moving an application from traditional WebSphere to Liberty. In WebSphere Application Server V9.0.0.11 and 8.5.5.16, you can easily produce a migration report for your applications from the enterprise applications collection page using the new Liberty readiness admin console feature.
 
 The [migration report](http://htmlpreview.github.com/?https://github.com/WASdev/sample.DefaultApplication/blob/master/report/DefaultApplication.ear_MigrationReport.html) tells us to focus on:
 
