@@ -2,7 +2,7 @@
 
 Sometimes applications last longer than we expect.  DefaultApplication.ear has been shipping as a WebSphere Application Server sample program for many releases. Classes in the application date back as far as 1997. We have seen [Transformation Advisor](https://ibm.biz/cloudta) system scans of WebSphere cells where DefaultApplication is the only complex application in the cell. That’s pretty embarrassing, so it was time for us to do some application modernization ourselves. This article shows the process we went through to update DefaultApplication so that it uses more modern programming models and so that it can run on Liberty or traditional WebSphere.
 
-The updated DefaultApplication ships with traditional WebSphere Application Server V9.0.0.11. If you install a new profile and install the sample applications, you will see the new version of DefaultApplication. If you already have DefaultApplication installed and apply the fix pack, it will not be automatically updated. You can update the application with the version shipped in the `installableApps` folder. 
+The updated DefaultApplication ships with traditional WebSphere Application Server V9.0.0.11. If you install a new profile and install the sample applications, you will see the new version of DefaultApplication. If you already have DefaultApplication installed and apply the fix pack, it will not be automatically updated. You can update the application with the version shipped in the `installableApps` folder.
 
 So here we go, let's modernize DefaultApplication. We will start with the report produced by the WebSphere [binary scanner](https://developer.ibm.com/wasdev/downloads/#asset/tools-Migration_Toolkit_for_Application_Binaries) that tells us what to consider when moving an application from traditional WebSphere to Liberty. In WebSphere Application Server V9.0.0.11 and 8.5.5.16, you can easily produce a migration report for your applications from the enterprise applications collection page using the new Liberty readiness admin console feature.
 
@@ -361,6 +361,48 @@ You will notice that we added an empty beans.xml for CDI. This file is not neces
 </beans>
 ```
 
+#### ibm-web-ext
+
+In the first update, ibm-web-ext.xmi settings were not migrated to ibm-web-ext.xml but that caused some behavior change issues. Some good and some not.
+
+This is partial contents of the orginal [ibm-web-ext.xmi](./original/dd/DefaultWebApplication/ibm-web-ext.xmi) file:
+
+```
+<webappext:WebAppExtension xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:webappext="webappext.xmi" xmlns:webapplication="webapplication.xmi" xmlns:commonext.localtran="commonext.localtran.xmi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmi:id="WebApp_ID_Ext"
+       reloadInterval="3"
+       reloadingEnabled="true"
+       fileServingEnabled="false"
+       directoryBrowsingEnabled="false"
+       serveServletsByClassnameEnabled="true"
+       preCompileJSPs="false"
+       autoRequestEncoding="false"
+       autoResponseEncoding="false">
+```
+
+All the web extension setting were initially left out of the modernized application. In particular, with `fileServingEnabled` disabled,
+the index.html welcome file does not work as expected. The initial delivery of DefaultApplication.ear in 9.0.0.11 allowed file serving.
+The application worked as expected, but since it has a context root of "/", it caused the WebSphere plugin in IHS to send anything under the context root to WebSphere instead of handling it by IHS. An alternative would have been to change the context root of DefaultApplication to be something other than "/". But for now, it behaves as it did in previous releases from a file serving point of view.
+
+In WebSphere 9.0.5, the [ibm-web-ext.xml](./modernized/DefaultWebApplication/src/main/webapp/WEB-INF/ibm-web-ext.xml) file is being added:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<web-ext xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://websphere.ibm.com/xml/ns/javaee"
+    xsi:schemaLocation="http://websphere.ibm.com/xml/ns/javaee http://websphere.ibm.com/xml/ns/javaee/ibm-web-ext_1_0.xsd" version="1.0">
+  <jsp-attribute name="reloadEnabled" value="true"/>
+  <jsp-attribute name="reloadInterval" value="10"/>
+
+  <reload-interval value="3"/>
+  <enable-reloading value="true"/>
+  <enable-file-serving value="false"/>
+  <enable-directory-browsing value="false"/>
+  <enable-serving-servlets-by-class-name value="true" />
+  <pre-compile-jsps value="false"/>  
+  <auto-encode-requests value="false"/>
+  <auto-encode-responses value="false"/>
+</web-ext>
+```
+
 ## The WebSphere Servlet API was superseded by a newer implementation
 
 The migration scan also reported that `The WebSphere Servlet API was superseded by a newer implementation`. Indeed the Hello servlet made use of the `com.ibm.servlet.PageListServlet` classes that are not available in Liberty.
@@ -441,6 +483,7 @@ cthigh@us.ibm.com@Cindys-MacBook-Pro modernized (master) $ tree .
 │               │   └── MANIFEST.MF
 │               ├── WEB-INF
 │               │   ├── beans.xml
+│               │   ├── ibm-web-ext.xml
 │               │   └── web.xml
 │               ├── auth_error.jsp
 │               ├── banner.gif

@@ -28,13 +28,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>DefaultApplication</groupId>
-            <artifactId>Increment</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <type>ejb</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
