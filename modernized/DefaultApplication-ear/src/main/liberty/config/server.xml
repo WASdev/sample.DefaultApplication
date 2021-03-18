@@ -3,7 +3,12 @@
 
     <!-- Enable features -->
     <featureManager>
-        <feature>javaee-7.0</feature>
+        <feature>appSecurity-2.0</feature>
+        <feature>ejbLite-3.2</feature>
+        <feature>jdbc-4.2</feature>
+        <feature>jsp-2.3</feature>
+        <feature>servlet-4.0</feature>
+        <feature>jpa-2.2</feature>
     </featureManager>
 
     <!-- Encoded password can be generated using bin/securityUtility -->
@@ -18,11 +23,12 @@
 
     <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
     <httpEndpoint id="defaultHttpEndpoint"
+                  host="*"
                   httpPort="9080"
                   httpsPort="9443" />
     
     <enterpriseApplication id="DefaultApplication" location="DefaultApplication.ear" name="DefaultApplication"/>
-    
+
     <jdbcDriver id="DerbyEmbedded" libraryRef="DerbyLib" />
     <library id="DerbyLib" filesetRef="DerbyFileset" />
     <fileset id="DerbyFileset"
@@ -32,7 +38,7 @@
     <dataSource id="DefaultDatasource"
                 jndiName="DefaultDatasource"
                 jdbcDriverRef="DerbyEmbedded">
-        <properties.derby.embedded 
+        <properties.derby.embedded
                 databaseName="${server.config.dir}/resources/DefaultDB"
                 createDatabase="false" />
     </dataSource>
