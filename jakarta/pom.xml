@@ -26,6 +26,15 @@
         <module>DefaultApplication-ear</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+          <groupId>org.apache.derby</groupId>
+          <artifactId>derby</artifactId>
+          <version>10.13.1.1</version>
+          <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
         <!-- Enable liberty-maven plugin -->
@@ -33,32 +42,22 @@
                 <groupId>io.openliberty.tools</groupId>
                 <artifactId>liberty-maven-plugin</artifactId>
                 <version>3.6.1</version>
+                <configuration>
+                  <copyDependencies>
+                  <!-- Copies the org.apache.derby:derby:10.13.1.1 and org.apache.derby:derbyclient:10.13.1.1
+                       dependencies plus transitive dependencies which were defined in the Maven dependencies
+                       above to the lib/global/derby folder of the target server and strips the version. -->
+                    <dependencyGroup>
+                      <!-- stripVersion>true</stripVersion -->
+                      <location>lib/global/derby</location>
+                      <dependency>
+                        <groupId>org.apache.derby</groupId>
+                        <artifactId>derby*</artifactId>
+                      </dependency>
+                    </dependencyGroup>
+                  </copyDependencies>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-                <!--executions>
-                  <execution>
-                    <id>create-server</id>
-                    <phase>pre-integration-test</phase>
-                    <goals>
-                      <goal>create</goal>
-                    </goals>
-                  </execution>
-
-                  <execution>
-                     <id>install-feature</id>
-                     <phase>prepare-package</phase>
-                     <goals>
-                        <goal>install-feature</goal>
-                     </goals>
-                     <configuration>
-                        <features>
-                            <acceptLicense>true</acceptLicense>
-                        </features>
-                     </configuration>
-                   </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build -->
 </project>

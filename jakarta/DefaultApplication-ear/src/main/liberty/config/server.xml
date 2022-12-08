@@ -32,8 +32,8 @@
     <jdbcDriver id="DerbyEmbedded" libraryRef="DerbyLib" />
     <library id="DerbyLib" filesetRef="DerbyFileset" />
     <fileset id="DerbyFileset"
-             dir="${shared.resource.dir}"
-             includes="derby-10.13.1.1.jar" />
+             dir="lib/global/derby"
+             includes="*.jar" />
 
     <dataSource id="DefaultDatasource"
                 jndiName="DefaultDatasource"
