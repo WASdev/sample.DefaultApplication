@@ -6,14 +6,7 @@ WORK IN PROGRESS
 In the [first phase of DefaultApplication modernization](../README.md), we moved a complex traditional WebSphere Application Server application to Liberty. In this article, we will upgrade the application to use Jakarta EE.
 
 - Review the application: where are we coming from and where do we want to go to.
-  -	What are the commands to run for the modernized branch
-		    mvn clean install
-		    mvn liberty:dev
-  - Decide which Java version we want to run
-  - Run the binary scanner - and go over the results
-	 - View the evaluation report and migration issues
-	 - view the migration issues
-- Copy the code 
+- Copy the code
 - Modernize to the latest liberty-maven-plugin
 - Running the Eclipse transformer to make the package changes
 - Testing and running the result.
@@ -24,59 +17,57 @@ In the [first phase of DefaultApplication modernization](../README.md), we moved
 
 ### Starting from the modernized folder
 
-* Scanned the existing war file
-* Scanned the ear file
+First, we look at the application as it exists today and decide how far we want to take this step of modernization. We want to move to Jakarta which requires at least Java 11. Should we move on up to Java 17 at the same time?
+
+You can build the modernized application running the following command from the [modernized](../modernized) folder.
+
+		    mvn clean install
+
+Scan the existing EAR file using the following commands to compare using Java 11 or Java 17.
+
+Scan 1:
+
+    java -jar binaryAppScanner.jar ~/git/sample.DefaultApplication/modernized/DefaultApplication-ear/target/DefaultApplication.ear --all  --sourceAppServer=liberty --sourceJavaEE=ee6  --sourceJava=ibm8 --targetJakartaEE=ee9  --targetJava=java11
+
+Scan 2:
+
+    java -jar binaryAppScanner.jar ~/git/sample.DefaultApplication/modernized/DefaultApplication-ear/target/DefaultApplication.ear --all  --sourceAppServer=liberty --sourceJavaEE=ee6  --sourceJava=ibm8 --targetJakartaEE=ee9  --targetJava=java17
 
 ![](./images/starting_binary_.scanner_report.png)
 
-* Create a new Jakarta folder￼
-* Clean the “modernized” folder
-* Copy all remaining files from “modernized” to “Jakarta”
-* Tried to start the application in devMode from the ear project
+The report shows two informational messages for Java 17, so let's go ahead and move up to Java 17.
 
-        mvn liberty:dev
-        [ERROR] Failed to execute goal io.openliberty.tools:liberty-maven-plugin:3.3.4:dev (default-cli) on project DefaultApplication: CWWKM2173E: Failed to install application from project DefaultApplication:DefaultApplication:pom:0.0.1-SNAPSHOT. The project packaging type is not supported. -> [Help 1]
-        [ERROR]
-        [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
-        [ERROR] Re-run Maven using the -X switch to enable full debug logging.
-        [ERROR]
-        [ERROR] For more information about the errors and possible solutions, please read the following articles:
-        [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+![](./images/Java17messages.png)
 
-- Download a starter project from openliberty.io to get the latest recommendations for the liberty-maven-plugin config
+## Copy the code
 
-- Worked on the pom.xml for multi-module support (where did I get the example?).
+This modernization could be done directly in the existing folder, but since we want to build on this exemplar, we will create a copy of the code moving folder. Here are the steps we took.
 
-- With Java 17 is installed:
+1. Create a new Jakarta folder￼
+1. Clean the “modernized” folder
+1. Copy all remaining files from “modernized” to “Jakarta”
+1. Build the application using the following command to make sure it still builds.  
 
-       [INFO] [AUDIT   ] CWWKS4104A: LTPA keys created in 0.633 seconds. LTPA key file: /Users/cthighus.ibm.com/git/sample.DefaultApplication/jakarta/DefaultApplication-ear/target/liberty/wlp/usr/servers/DefaultApplicationServer/resources/security/ltpa.keys
-       [INFO] [WARNING ] [ TargetsTableImpl@f9e1ed9 ] ANNO_TARGETS_SCAN_EXCEPTION [ java.io.Serializable ] (java.lang.IllegalArgumentException: Unsupported class file major version 62
-       [INFO] 	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:189)
-       [INFO] 	at [internal classes]
-       [INFO]  : Unsupported class file major version 62)
-       [INFO] [WARNING ] Scan exception
-       [INFO] Unsupported class file major version 62
-       [INFO] [WARNING ] [ TargetsTableImpl@f9e1ed9 ] ANNO_TARGETS_SCAN_EXCEPTION [ java.lang.Object ] (java.lang.IllegalArgumentException: Unsupported class file major version 62
-       [INFO] 	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:189)
-       [INFO] 	at [internal classes]
-       [INFO]  : Unsupported class file major version 62)
-       [INFO] [WARNING ] Scan exception
-       [INFO] Unsupported class file major version 62
-       [INFO] [WARNING ] [ TargetsTableImpl@f9e1ed9 ] ANNO_TARGETS_SCAN_EXCEPTION [ java.lang.annotation.Annotation ] (java.lang.IllegalArgumentException: Unsupported class file major version 62
-       [INFO] 	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:189)
-       [INFO] 	at [internal classes]
-       [INFO]  : Unsupported class file major version 62)
-       [INFO] [WARNING ] Scan exception
-       [INFO] Unsupported class file major version 62
-       [INFO] [WARNING ] ANNO_CLASSINFO_SCAN_EXCEPTION
-       [INFO]                                                                                                                ClassInfoCacheImpl@653d45a7
-       [INFO]                    
+        mvn clean install
 
-- Java 11 runs OK
+### Update the pom.xml
+
+The "modernized" application uses the 3.3.4 version of the liberty-maven-plugin, so we will be doing some work to upgrade that to the latest to use dev mode using multi-module support. Check the [Creating a multi-module application](https://github.com/OpenLiberty/guide-maven-multimodules) guide to learn more about the liberty-maven-plugin and its multi-module support.
+
+Some of the highlights of the pom.xml updates include
+- Remove the use of the parent POM
+- Moved to version 3.6.1 of the liberty-maven-plugin
+- Switched to Java 17
+
+      <maven.compiler.source>17</maven.compiler.source>
+      <maven.compiler.target>17</maven.compiler.target>
+
+- Take advantage of the liberty-maven-plugin `copyDependencies` parameter to copy the Derby driver.
+- With these changes in place, we can now run Liberty dev mode on this multi-module project.
 
 ![](./images/before_runs_ok_java11.png)
 
-- I re-enabled file serving and open the application at http://localhost:9080/
+There were a couple more minor changes made before moving to Jakarta 9. I re-enabled file serving and open the application at http://localhost:9080/
 
 ![](./images/DefaultApplicationRunning.jpg)
 

@@ -314,6 +314,9 @@ public class SnoopServlet extends HttpServlet
 
 
         private String escapeChar(String str) {
+            if (str == null) {
+              return "";
+            }
             char src[] = str.toCharArray();
             int len = src.length;
             for (int i = 0; i < src.length; i++) {
