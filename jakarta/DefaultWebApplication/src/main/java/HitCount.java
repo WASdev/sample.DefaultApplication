@@ -112,7 +112,7 @@ public class HitCount extends HttpServlet
             if ( value == null)
             {
                 if (create) {
-                  value = new Integer(1);
+                  value = Integer.valueOf(1);
                   msg = "Hit Count value for (new session): 1";
                 } else {
                     msg = "Error - Session exists, but count key was not found!";
@@ -120,7 +120,7 @@ public class HitCount extends HttpServlet
             }
             else
             {
-                value = new Integer(value.intValue() + 1);
+                value = Integer.valueOf(value.intValue() + 1);
                 msg = "Hit Count value for (existing session): " + value;
             }
             session.setAttribute("count", value);
