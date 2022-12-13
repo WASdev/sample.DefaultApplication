@@ -42,6 +42,13 @@
                 <artifactId>liberty-maven-plugin</artifactId>
                 <version>3.6.1</version>
                 <configuration>
+                  <!-- if you want a particular Liberty version, configure it here -->
+                  <!-- assemblyArtifact>
+                    <groupId>com.ibm.websphere.appserver.runtime</groupId>
+                    <artifactId>wlp-jakartaee9</artifactId>
+                    <version>22.0.0.12</version>
+                    <type>zip</type>
+                  </assemblyArtifact -->
                   <copyDependencies>
                   <!-- Copies the org.apache.derby:derby:10.13.1.1 and org.apache.derby:derbyclient:10.13.1.1
                        dependencies plus transitive dependencies which were defined in the Maven dependencies

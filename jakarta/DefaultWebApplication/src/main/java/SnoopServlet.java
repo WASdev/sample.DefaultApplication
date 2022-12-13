@@ -1,7 +1,7 @@
 /*
  * @(#)SnoopServlet.java        1.00 99/03/15
  *
- * Copyright (c) 1999, 2005 International Business Machines. All Rights Reserved.
+ * Copyright (c) 1999, 20022 International Business Machines. All Rights Reserved.
  *
  * This software is the confidential and proprietary information of IBM.
  * You shall not disclose such Confidential Information and shall use it
@@ -54,7 +54,8 @@ public class SnoopServlet extends HttpServlet
                 out.println("<h2>Requested URL:</h2>");
                 out.println("<TABLE Border=\"2\" WIDTH=\"65%\" BGCOLOR=\"#DDDDFF\">");
                 out.println("<tr><td>" + escapeChar(HttpUtils.getRequestURL(req).toString()) + "</td></tr></table><BR><BR>");
-//                out.println("<tr><td>" + escapeChar(req.getRequestURL().toString()) + "</td></tr></table><BR><BR>");
+                // the following update is needed soon with Jakarta 10.
+                // out.println("<tr><td>" + escapeChar(req.getRequestURL().toString()) + "</td></tr></table><BR><BR>");
 
                 out.println("<h2>Servlet Name:</h2>");
                 out.println("<TABLE Border=\"2\" WIDTH=\"65%\" BGCOLOR=\"#DDDDFF\">");

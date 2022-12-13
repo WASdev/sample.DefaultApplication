@@ -1,5 +1,5 @@
 //
-// 5630-A23, 5630-A22, (C) Copyright IBM Corporation, 1997, 2019
+// 5630-A23, 5630-A22, (C) Copyright IBM Corporation, 1997, 2022
 // All rights reserved. Licensed Materials Property of IBM
 // Note to US Government users: Documentation related to restricted rights
 // Use, duplication or disclosure is subject to restrictions set forth in GSA ADP Schedule with IBM Corp.
@@ -25,20 +25,20 @@ import com.ibm.defaultapplication.IncrementSSB;
  *   JPA
  */
 
-@WebServlet(name="Hit Count Servlet", 
-            description="This servlet demonstrates the various ways to increment a counter. The methods used are: Servlet instance variable, Session object, and JPA.", 
+@WebServlet(name="Hit Count Servlet",
+            description="This servlet demonstrates the various ways to increment a counter. The methods used are: Servlet instance variable, Session object, and JPA.",
             urlPatterns="/hitcount")
 public class HitCount extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 	private int count = 0;
-    
+
  	@Resource
  	private UserTransaction tx;
-    
+
 	@EJB
 	private IncrementSSB inc;
-	
+
     public void service (HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
     {
         String       msg = "";
@@ -77,7 +77,7 @@ public class HitCount extends HttpServlet
                   tx.commit();
                   transMsg = "Transaction Commit completed.";
               }
-              
+
           } catch (Exception e) {
               transMsg = "Transaction " + (("RLB".equals(trans)) ? "Rollback" : "Commit") + " failed!";
               System.out.println("Hit Count: " + transMsg);

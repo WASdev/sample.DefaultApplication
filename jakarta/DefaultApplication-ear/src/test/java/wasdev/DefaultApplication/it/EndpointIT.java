@@ -1,5 +1,5 @@
 /*******************************************************************************
- * (c) Copyright IBM Corporation 2019.
+ * (c) Copyright IBM Corporation 2019, 2022.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,29 +23,39 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 
 public class EndpointIT {
-    private static String URL;
 
-    @BeforeClass
-    public static void init() {
-        URL = "http://localhost:9080/hitcount";
-    }
-
-    @Test
-    public void testServlet() throws Exception {
+    public void testServlet(String url, int expectedStatus, String expectedResponse) throws Exception {
         HttpClient client = new HttpClient();
 
-        GetMethod method = new GetMethod(URL);
+        GetMethod method = new GetMethod(url);
 
         try {
             int statusCode = client.executeMethod(method);
 
-            assertEquals("HTTP GET failed", HttpStatus.SC_OK, statusCode);
+            assertEquals("Unexpected HTTP status code ", expectedStatus, statusCode);
 
-            String response = method.getResponseBodyAsString(3000);
-
-            assertTrue("Unexpected response body", response.contains("Hit Count Demonstration"));
+            if (expectedResponse != null) {
+                String response = method.getResponseBodyAsString(3000);
+                assertTrue("Unexpected response body", response.contains(expectedResponse));
+            }
         } finally {
             method.releaseConnection();
-        }  
+        }
+    }
+
+    @Test
+    public void testRoot() throws Exception {
+      testServlet("http://localhost:9080", HttpStatus.SC_OK, "Default Application");
+    }
+
+
+    @Test
+    public void testHitCount() throws Exception {
+      testServlet("http://localhost:9080/hitcount", HttpStatus.SC_OK, "Hit Count Demonstration");
+    }
+
+    @Test
+    public void testSnoopRequiresAuthentication() throws Exception {
+      testServlet("http://localhost:9080/snoop", 401, null);
     }
 }

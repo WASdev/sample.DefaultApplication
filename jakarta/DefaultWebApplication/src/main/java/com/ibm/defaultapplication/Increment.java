@@ -1,5 +1,5 @@
 //
-// 5630-A23, 5630-A22, (C) Copyright IBM Corporation, 2019
+// 5630-A23, 5630-A22, (C) Copyright IBM Corporation, 2019. 2022
 // All rights reserved. Licensed Materials Property of IBM
 // Note to US Government users: Documentation related to restricted rights
 // Use, duplication or disclosure is subject to restrictions set forth in GSA ADP Schedule with IBM Corp.
@@ -14,7 +14,7 @@ import jakarta.persistence.*;
 
 /**
  * The persistent class for the INCREMENT database table.
- * 
+ *
  */
 @Entity
 @NamedQuery(name="Increment.findAll", query="SELECT i FROM Increment i")
