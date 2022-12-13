@@ -4,13 +4,13 @@ When we first [modernized DefaultApplication](../README.md), we moved a complex,
 
 Here is an outline of the step-by-step process we will go through to do the modernization.
 
-- Review the application
-- Modernize the code
+- [Review the application](#review-the-application)
+- [Modernize the code](#modernize-the-code)
   - Copy the code
-  - Make pom.xml updates to the latest liberty-maven-plugin
+  - pom.xml updates for the liberty-maven-plugin
   - Run the Eclipse transformer
-- Test the result
-- Review the application updates
+- [Test the result](#test-the-result)
+- [Review the Technology Evaluation report](#review-the-technology-evaluation-report)
 
 ## Review the application
 
@@ -56,7 +56,7 @@ This modernization could be done directly in the existing folder, but since we w
 
         mvn clean install
 
-### pom.xml updates to the latest liberty-maven-plugin
+### pom.xml updates for the liberty-maven-plugin
 
 The "modernized" application uses the 3.3.4 version of the [liberty-maven-plugin](https://github.com/OpenLiberty/ci.maven#readme). Quite a bit of new functionality has been added to the plugin, so we will upgrade to the a newer version of the plugin. Check out the [Creating a multi-module application](https://github.com/OpenLiberty/guide-maven-multimodules) guide to learn more about the liberty-maven-plugin and its multi-module support.
 
@@ -169,7 +169,7 @@ And to polish off my pom.xml changes, I removed the `assemblyArtifact` configura
 
 The Liberty features will be installed as needed during build.
 
-## Testing and running the result
+## Test the result
 
 With the code and pom.xml updates made, I can start testing the application.
 
@@ -186,7 +186,7 @@ When running manual tests, you need to run the `prepare-package` goal before try
     mvn install
     mvn prepare-package liberty:dev
 
-## Reviewing the Technology Evaluation report
+## Review the Technology Evaluation report
 
 When running in dev mode, the application is packaged as a loose application described by DefaultApplication.ear.xml. This allows classes to be picked up as soon as they are recompiled without repackaging the archive.
 
