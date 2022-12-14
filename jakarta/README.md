@@ -22,14 +22,21 @@ Building the existing application allows us to scan the EAR file using the [bina
 
 Create the EAR file in the `modernized` application by running the following command from the [modernized](../modernized) folder.
 
-		    mvn clean install
+    mvn clean install
 
 ### Scan the code with the binary scanner
 
 The binary scanner was updated recently with support for Jakarta 9 migration rules. At this time Jakarta 10 is in beta for Liberty. We will focus on the initial hop from Java EE to Jakarta EE 9.1. The following command scans for Jakarta 9.1 differences and allows us to compare the changes needed for moving to Java SE 11 or Java SE 17.
 
 
-    java -jar binaryAppScanner.jar ~/git/sample.DefaultApplication/modernized/DefaultApplication-ear/target/DefaultApplication.ear --all  --sourceAppServer=liberty --sourceJavaEE=ee8  --sourceJava=ibm8 --targetJakartaEE=ee9  --targetJava=java17
+    java -jar binaryAppScanner.jar \
+    ~/git/sample.DefaultApplication/modernized/DefaultApplication-ear/target/DefaultApplication.ear \
+    --all \
+    --sourceAppServer=liberty \
+    --sourceJavaEE=ee8  \
+    --sourceJava=ibm8 \
+    --targetJakartaEE=ee9  \
+    --targetJava=java17
 
 ![](./images/starting_binary_scanner_report.png)
 
@@ -49,14 +56,16 @@ The Technology Evaluation report shows the Java EE technologies currently used b
 
 This modernization could be done directly in the existing folder, but since we want to build on this exemplar, we will create a copy of the code in a new folder by taking these steps:
 
-1. Create a new `jakarta` folder￼
-1. Clean the `modernized` folder
+1. Create a new `jakarta` folder
+1. Run `mvn clean` in the `modernized` folder
 1. Copy all remaining files from `modernized` to `jakarta`
 1. Build the application using the following command to make sure it still builds as a Java EE application.  
 
-        mvn clean install
+    mvn clean install
 
 ### pom.xml updates
+
+#### liberty-maven-plugin
 
 The "modernized" application uses the 3.3.4 version of the [liberty-maven-plugin](https://github.com/OpenLiberty/ci.maven#readme). Quite a bit of new functionality has been added to the plugin, so we will upgrade to the a newer version of the plugin. Check out the [Creating a multi-module application](https://github.com/OpenLiberty/guide-maven-multimodules) guide to learn more about the liberty-maven-plugin and its multi-module support.
 
@@ -64,13 +73,23 @@ Highlights of the pom.xml updates include
 - Move to version 3.6.1 of the liberty-maven-plugin
 - Remove the use of the parent POM
 - Take advantage of the liberty-maven-plugin `copyDependencies` parameter to copy the Derby driver.
-- Switch to Java 17
+
+#### Switch to Java SE 17
+
+By updating the compiler source and target attributes we can start using Java SE 17.
+
       <maven.compiler.source>17</maven.compiler.source>
       <maven.compiler.target>17</maven.compiler.target>
 
+#### Run the binary scanner using maven
+
+We have already run the binary scanner by downloading the latest version and running in the command line. By following the instructions in the blog [Build Your Way to a Modernized Application](https://community.ibm.com/community/user/wasdevops/blogs/alex-motley1/2022/04/12/applications-pipelines-and-migrations), I added support to the root pom.xml to use Maven to run the binary scanner going forward.  The binary scanner is released to the Maven repository with our normal release cadence.
+
+#### Test it out
+
 With these changes in place, we can run Liberty dev mode on this multi-module project using the following command:
 
-        mvn liberty:dev
+    mvn liberty:dev
 
 There is one integration test and it is passing OK.
 
@@ -84,14 +103,14 @@ One other minor change I made before moving to Jakarta 9.1 was to re-enabled fil
 
 Take a look at the [server.xml](../modernized/DefaultApplication-ear/src/main/liberty/config/server.xml) in the modernized folder. The features are at the Java EE 8 level.
 
-          <featureManager>
-              <feature>appSecurity-2.0</feature>
-              <feature>ejbLite-3.2</feature>
-              <feature>jdbc-4.2</feature>
-              <feature>jsp-2.3</feature>
-              <feature>servlet-4.0</feature>
-              <feature>jpa-2.2</feature>
-          </featureManager>
+    <featureManager>
+        <feature>appSecurity-2.0</feature>
+        <feature>ejbLite-3.2</feature>
+        <feature>jdbc-4.2</feature>
+        <feature>jsp-2.3</feature>
+        <feature>servlet-4.0</feature>
+        <feature>jpa-2.2</feature>
+    </featureManager>
 
 Also, looking at the binary scanner migration report which scanned for differences between Java EE 8 and Jakarta EE 9, we are warned of the Jakarta EE package rename that is required. Java EE 8 and earlier APIs use `javax` as the root of the package name. Starting with Jakarta EE 9, API packages start with `jakarta`. See the migration report rule help for more information.
 
@@ -103,9 +122,12 @@ Since we only want to generate changes for the source code, we need to clean the
 
 1. Download and install the [Eclipse Transformer](https://projects.eclipse.org/projects/technology.transformer)
 1. Clean the project in the jakarta folder to get rid of all the binaries from the target folder
-         mvn clean
+
+       mvn clean
 1. Run the Eclipse transformer command
-         java -jar org.eclipse.transformer.cli-0.6.0-SNAPSHOT.jar ~/git/sample.DefaultApplication/jakarta/  ./transformedApp
+       java -jar org.eclipse.transformer.cli-0.6.0-SNAPSHOT.jar \
+       ~/git/sample.DefaultApplication/jakarta/  \
+       ./transformedApp
 1. The Eclipse Transformer does not change files in place, so I copied the five changed files back to the source folder.
 ![](./images/TransformerFilesUpdates.png)
 
@@ -128,18 +150,18 @@ Since we only want to generate changes for the source code, we need to clean the
 
 Using the feature table found in the [Eclipse Transformer blog](https://openliberty.io/blog/2021/03/17/eclipse-transformer.html#features), I manually updated the feature list:
 
-       <featureManager>
-          <feature>appSecurity-4.0</feature>
-          <feature>enterpriseBeansLite-4.0</feature>
-          <feature>jdbc-4.2</feature>
-          <feature>pages-3.0</feature>
-          <feature>servlet-5.0</feature>
-          <feature>persistence-3.0</feature>
-       </featureManager>
+    <featureManager>
+        <feature>appSecurity-4.0</feature>
+        <feature>enterpriseBeansLite-4.0</feature>
+        <feature>jdbc-4.2</feature>
+        <feature>pages-3.0</feature>
+        <feature>servlet-5.0</feature>
+        <feature>persistence-3.0</feature>
+    </featureManager>
 
 The next step is to see how far this gets us by trying to build the project.
 
-      mvn clean package
+    mvn clean package
 
 As it turns out, we hit some bumps.
 
@@ -150,10 +172,10 @@ While the Eclipse Transformer updated the `groupId` and the `artifactId` for the
 Also, the transformer did not update the `javax` dependency, so I manually updated it with the following entry which includes everything I need including the `jakarta.persistence-api` dependency
 
     <dependency>
-      <groupId>jakarta.platform</groupId>
-      <artifactId>jakarta.jakartaee-api</artifactId>
-      <version>9.1.0</version>
-      <scope>provided</scope>
+        <groupId>jakarta.platform</groupId>
+        <artifactId>jakarta.jakartaee-api</artifactId>
+        <version>9.1.0</version>
+        <scope>provided</scope>
     </dependency>
 
 The benefit of the Eclipse Transformer is that it got me looking at my dependencies.
@@ -161,10 +183,10 @@ The benefit of the Eclipse Transformer is that it got me looking at my dependenc
 And to polish off my pom.xml changes, I removed the `assemblyArtifact` configuration so that I use the latest kernel archive.
 
     <assemblyArtifact>
-      <groupId>com.ibm.websphere.appserver.runtime</groupId>
-      <artifactId>wlp-javaee8</artifactId>
-      <version>21.0.0.1</version>
-      <type>zip</type>
+        <groupId>com.ibm.websphere.appserver.runtime</groupId>
+        <artifactId>wlp-javaee8</artifactId>
+        <version>21.0.0.1</version>
+        <type>zip</type>
     </assemblyArtifact>
 
 The Liberty features are be installed as needed during build.
@@ -190,12 +212,14 @@ When running manual tests, you need to run the `prepare-package` goal before try
 
 When running in dev mode, the application is packaged as a loose application described by DefaultApplication.ear.xml. This allows classes to be picked up as soon as they are recompiled without repackaging the archive.
 
-As one last check, let's build the EAR file and run the evaluation report for the archive.
+As one last check, let's build the EAR file and run the binary scanner against the archive.
 
-1. Build the application archive
-        mvn clean install
-1. Run the evaluation report on the archive to see the Jakarta technologies used. Run this binary scanner command:
-        java -jar binaryAppScanner.jar ~/git/sample.DefaultApplication/jakarta/DefaultApplication-ear/target/DefaultApplication.ear --evaluate
+1. Build the application archive and run the analysis
+
+       mvn clean install exec:java
+1. Open the report
+
+       open ./target/DefaultApplication.ear_MigrationReport.html
 
 
 ![](./images/evaluationReportJakartaEE.png)
