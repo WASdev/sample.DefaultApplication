@@ -219,10 +219,13 @@ When running in dev mode, the application is packaged as a loose application des
 As one last check, let's build the EAR file and run the binary scanner against the archive.
 
 1. Build the application archive
+
        mvn clean package
 1. Run the binary scanner using Maven
+
        mvn exec:java
 1. Open the report
+
        open ./target/DefaultApplication.ear_MigrationReport.html
 
 
