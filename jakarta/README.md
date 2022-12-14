@@ -61,7 +61,7 @@ This modernization could be done directly in the existing folder, but since we w
 1. Copy all remaining files from `modernized` to `jakarta`
 1. Build the application using the following command to make sure it still builds as a Java EE application.  
 
-      mvn clean install
+       mvn clean install
 
 ### pom.xml updates
 
