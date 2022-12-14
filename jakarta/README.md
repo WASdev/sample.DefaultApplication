@@ -7,10 +7,10 @@ Here is an outline of the step-by-step process we went through to do the moderni
 - [Review the application](#review-the-application)
 - [Modernize the code](#modernize-the-code)
   - Copy the code
-  - pom.xml updates for the liberty-maven-plugin
+  - Make pom.xml updates
   - Run the Eclipse transformer
 - [Test the result](#test-the-result)
-- [Review the Technology Evaluation report](#review-the-technology-evaluation-report)
+- [Review the Technology Evaluation report](#review-the-binary-scanner-reports)
 
 ## Review the application
 
@@ -24,7 +24,7 @@ Create the EAR file in the `modernized` application by running the following com
 
     mvn clean install
 
-### Scan the code with the binary scanner
+### Scan the application with the binary scanner
 
 The binary scanner was updated recently with support for Jakarta 9 migration rules. At this time Jakarta 10 is in beta for Liberty. We will focus on the initial hop from Java EE to Jakarta EE 9.1. The following command scans for Jakarta 9.1 differences and allows us to compare the changes needed for moving to Java SE 11 or Java SE 17.
 
@@ -57,11 +57,11 @@ The Technology Evaluation report shows the Java EE technologies currently used b
 This modernization could be done directly in the existing folder, but since we want to build on this exemplar, we will create a copy of the code in a new folder by taking these steps:
 
 1. Create a new `jakarta` folder
-1. Run `mvn clean` in the `modernized` folder
+1. Run `mvn clean` from the `modernized` folder
 1. Copy all remaining files from `modernized` to `jakarta`
 1. Build the application using the following command to make sure it still builds as a Java EE application.  
 
-    mvn clean install
+      mvn clean install
 
 ### pom.xml updates
 
@@ -78,12 +78,12 @@ Highlights of the pom.xml updates include
 
 By updating the compiler source and target attributes we can start using Java SE 17.
 
-      <maven.compiler.source>17</maven.compiler.source>
-      <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
 
 #### Run the binary scanner using maven
 
-We have already run the binary scanner by downloading the latest version and running in the command line. By following the instructions in the blog [Build Your Way to a Modernized Application](https://community.ibm.com/community/user/wasdevops/blogs/alex-motley1/2022/04/12/applications-pipelines-and-migrations), I added support to the root pom.xml to use Maven to run the binary scanner going forward.  The binary scanner is released to the Maven repository with our normal release cadence.
+We have already run the binary scanner by downloading the latest version and running the scanner from the command line. By following the instructions in the blog [Build Your Way to a Modernized Application](https://community.ibm.com/community/user/wasdevops/blogs/alex-motley1/2022/04/12/applications-pipelines-and-migrations), I added support to the main pom.xml to use Maven to run the binary scanner going forward.  The binary scanner is released to the Maven Central Repository as part of our normal release cadence.
 
 #### Test it out
 
@@ -91,7 +91,7 @@ With these changes in place, we can run Liberty dev mode on this multi-module pr
 
     mvn liberty:dev
 
-There is one integration test and it is passing OK.
+There is one integration test and it is passing.
 
 ![](./images/before_runs_ok_java17.png)
 
@@ -121,10 +121,11 @@ This is a small application, and we could easily make the package name changes m
 Since we only want to generate changes for the source code, we need to clean the project before generating the changes (and yes, I forgot to do this the first time). Here are the steps to run the Eclipse Transformer:
 
 1. Download and install the [Eclipse Transformer](https://projects.eclipse.org/projects/technology.transformer)
-1. Clean the project in the jakarta folder to get rid of all the binaries from the target folder
+1. Clean the binaries from the `jakarta` folder by running the following command
 
        mvn clean
 1. Run the Eclipse transformer command
+
        java -jar org.eclipse.transformer.cli-0.6.0-SNAPSHOT.jar \
        ~/git/sample.DefaultApplication/jakarta/  \
        ./transformedApp
@@ -137,6 +138,7 @@ Since we only want to generate changes for the source code, we need to clean the
   * DefaultWebApplication/src/main/java/ com.ibm.defaultapplication.Increment.java
   * DefaultWebApplication/src/main/java/com.ibm.defaultapplication.IncrementSSB.java
   * DefaultWebApplication/pom.xml
+
 
   Here is an example of the Java changes made with the old code on the left side and the new code on the right:
 
@@ -158,6 +160,8 @@ Using the feature table found in the [Eclipse Transformer blog](https://openlibe
         <feature>servlet-5.0</feature>
         <feature>persistence-3.0</feature>
     </featureManager>
+
+You can also use Liberty dev mode to help you [generate feature lists](https://github.com/OpenLiberty/ci.maven/blob/main/docs/generate-features.md). This capability is disabled by default, but you can enable it with a system property or by using the key sequence `g`+`Enter` to toggle it on and off. The key sequence `o`+`Enter` tells dev mode to rescan all classes.
 
 The next step is to see how far this gets us by trying to build the project.
 
@@ -199,7 +203,7 @@ Using dev mode, it is easy to test, update code, and re-test in a tight inner lo
 
     mvn liberty:dev
 
-You can also add more tests in dev mode. Since there was only one test, I made some changes to the [EndpointIT.java](./DefaultWebApplication-ear/src/test/java/wasdev/DefaultApplication/it/EndpointIT.java) file to add two more integration tests. Pressing the Enter key from the dev mode terminal recompiles the code and tests and it runs the tests again. After a few compile errors, my new tests are passing.
+You can also add more tests in dev mode. Since there was only one test, I made some changes to the [EndpointIT.java](./DefaultWebApplication-ear/src/test/java/wasdev/DefaultApplication/it/EndpointIT.java) file to add two more integration tests. Pressing the Enter key from the Liberty dev mode terminal recompiles the code and runs the tests again. After a few compile errors, my new tests are passing.
 
 ![](./images/addedMoreTests.png)
 
@@ -208,22 +212,24 @@ When running manual tests, you need to run the `prepare-package` goal before try
     mvn install
     mvn prepare-package liberty:dev
 
-## Review the Technology Evaluation report
+## Review the binary scanner reports
 
 When running in dev mode, the application is packaged as a loose application described by DefaultApplication.ear.xml. This allows classes to be picked up as soon as they are recompiled without repackaging the archive.
 
 As one last check, let's build the EAR file and run the binary scanner against the archive.
 
-1. Build the application archive and run the analysis
-
-       mvn clean install exec:java
+1. Build the application archive
+       mvn clean package
+1. Run the binary scanner using Maven
+       mvn exec:java
 1. Open the report
-
        open ./target/DefaultApplication.ear_MigrationReport.html
 
 
-![](./images/evaluationReportJakartaEE.png)
+![](./images/MigrationReportJakarta.png)
 
-As you can see, the technology report shows that the application is using Jakarta EE technologies. We are on the way with Jakarta 9.1. With Jakarta 10 right around the corner, we will revisit this application with Jakarta 10 soon!
+Two of the analysis results are gone after the changes are made since we have converted the javax.transaction to jakarta and we removed the deprecated Integer constructors.
 
-Hint, hint: There is a code update needed to run on Jakarta 10!
+Also, the technology report shows that the application is using Jakarta EE technologies. We are on the way with Jakarta 9.1. With Jakarta 10 right around the corner, we will revisit this application with Jakarta 10 soon!
+
+Hint, hint: A code update is needed to run on Jakarta 10!
