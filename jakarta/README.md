@@ -44,7 +44,7 @@ The following report shows one informational message for Java SE 11 and two info
 
 ![](./images/AnalysisReport.png)
 
-We will go ahead and clean up those deprecated primitive wrapper constructors in [Hitcount.java](./DefaultWebApplication/src/main/java/Hitcount.java) since Java is moving faster to remove deprecated APIs.
+We will go ahead and clean up those deprecated primitive wrapper constructors in [HitCount.java](./DefaultWebApplication/src/main/java/HitCount.java) since Java is moving faster to remove deprecated APIs.
 
 The Technology Evaluation report shows the Java EE technologies currently used by the application.
 
@@ -116,9 +116,9 @@ Also, looking at the binary scanner migration report which scanned for differenc
 
 ![](./images/WarningRules.png)
 
-This is a small application, and we could easily make the package name changes manually, but the [Eclipse Transformer](https://openliberty.io/blog/2021/03/17/eclipse-transformer.html) is highly recommended to make the code changes since there are some `javax` packages that remain in Java SE. Another cool feature of the Eclipse Transformer is that you can use it to modify your source code or your application binaries. We have used the binary feature to generate test applications. You can use the binary feature to run a quick proof of concept for your application running on Jakarta.
+This is a small application, and we could easily make the package name changes manually, but the [Eclipse Transformer](https://openliberty.io/blog/2021/03/17/eclipse-transformer.html) is highly recommended to make the code changes since there are some `javax` packages that remain in Java SE. Another cool feature of the Eclipse Transformer is that you can use it to modify your source code or your application binaries. We have used the binary feature to generate Jakarta test applications. You can use the binary feature to run a quick proof of concept for your application running on Jakarta.
 
-Since we only want to generate changes for the source code, we need to clean the project before generating the changes (and yes, I forgot to do this the first time). Here are the steps to run the Eclipse Transformer:
+Since we only want to make changes to the source code, we need to clean the project before generating the changes (and yes, I forgot to do this the first time). Here are the steps to run the Eclipse Transformer:
 
 1. Download and install the [Eclipse Transformer](https://projects.eclipse.org/projects/technology.transformer)
 1. Clean the binaries from the `jakarta` folder by running the following command
@@ -132,7 +132,7 @@ Since we only want to generate changes for the source code, we need to clean the
 1. The Eclipse Transformer does not change files in place, so I copied the five changed files back to the source folder.
 ![](./images/TransformerFilesUpdates.png)
 
-  The updated code includes
+  The updated files include
   * DefaultWebApplication/src/main/java/HitCount.java
   * DefaultWebApplication/src/main/java/SnoopServlet.java
   * DefaultWebApplication/src/main/java/ com.ibm.defaultapplication.Increment.java
@@ -203,7 +203,7 @@ Using dev mode, it is easy to test, update code, and re-test in a tight inner lo
 
     mvn liberty:dev
 
-You can also add more tests in dev mode. Since there was only one test, I made some changes to the [EndpointIT.java](./DefaultWebApplication-ear/src/test/java/wasdev/DefaultApplication/it/EndpointIT.java) file to add two more integration tests. Pressing the Enter key from the Liberty dev mode terminal recompiles the code and runs the tests again. After a few compile errors, my new tests are passing.
+You can also add more tests in dev mode. Since there was only one test, I made some changes to the [EndpointIT.java](./DefaultWebApplication-ear/src/test/java/wasdev/DefaultApplication/it/EndpointIT.java) file to add two more integration tests. Pressing the Enter key from the Liberty dev mode terminal recompiles the code and runs the tests again. After fixing a few compile errors, my new tests are passing.
 
 ![](./images/addedMoreTests.png)
 
@@ -231,7 +231,7 @@ As one last check, let's build the EAR file and run the binary scanner against t
 
 ![](./images/MigrationReportJakarta.png)
 
-Two of the analysis results are gone after the changes are made since we have converted the javax.transaction to jakarta and we removed the deprecated Integer constructors.
+Two of the analysis results are gone after the changes are made since we have converted the javax.transaction to jakarta and we removed the deprecated Integer constructors. The remaining issues are general in nature and will always trigger with the targets I have selected.
 
 Also, the technology report shows that the application is using Jakarta EE technologies. We are on the way with Jakarta 9.1. With Jakarta 10 right around the corner, we will revisit this application with Jakarta 10 soon!
 
