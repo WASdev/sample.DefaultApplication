@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd"
+    version="6">
+
+      <description>This is the IBM WebSphere Application Server Default Application.</description>
+      <display-name>DefaultApplication.ear</display-name>
+      <module id="WebModule_1">
+         <web>
+            <web-uri>DefaultWebApplication.war</web-uri>
+            <context-root>/</context-root>
+         </web>
+      </module>
+      <security-role id="SecurityRole_1">
+         <description>All Authenticated users role.</description>
+         <role-name>All Role</role-name>
+      </security-role>
+</application>
