@@ -116,9 +116,9 @@ Also, looking at the binary scanner migration report which scanned for differenc
 
 ![](./images/WarningRules.png)
 
-This is a small application, and we could easily make the package name changes manually, but the [Eclipse Transformer](https://openliberty.io/blog/2021/03/17/eclipse-transformer.html) is highly recommended to make the code changes since there are some `javax` packages that remain in Java SE. Another cool feature of the Eclipse Transformer is that you can use it to modify your source code or your application binaries. We have used the binary feature to generate Jakarta test applications. You can use the binary feature to run a quick proof of concept for your application running on Jakarta.
+This is a small application, and we could easily make the package name changes manually, but the [Eclipse Transformer](https://openliberty.io/blog/2021/03/17/eclipse-transformer.html) is highly recommended to make the code changes since there are some `javax` packages that remain in Java SE. Another cool feature of the Eclipse Transformer is that you can use it to modify your source code or your application binaries. We have used the binary feature to generate Jakarta test applications. You can use the binary feature to run a quick proof of concept for your application running on Jakarta. If you are running the Eclipse Transformer on your binaries, the [transformer-maven-plugin](https://github.com/eclipse/transformer/blob/main/maven-plugins/transformer-maven-plugin/README.md) provides a better way for running the transformer with your build process.
 
-Since we only want to make changes to the source code, we need to clean the project before generating the changes (and yes, I forgot to do this the first time). Here are the steps to run the Eclipse Transformer:
+Since we only want to make changes to the source code and this only needs to be done once, I just ran the Eclipse Transformer from the command line. We need to clean the project before generating the changes (and yes, I forgot to do this the first time). Here are the steps to run the Eclipse Transformer:
 
 1. Download and install the [Eclipse Transformer](https://projects.eclipse.org/projects/technology.transformer)
 1. Clean the binaries from the `jakarta` folder by running the following command
@@ -144,7 +144,7 @@ Since we only want to make changes to the source code, we need to clean the proj
 
   ![](./images/JavaTransformerUpdates.png)
 
-  The pom.xml update helped me find the dependencies that needed to be changed.
+  The Eclipse Transformer just processes the pom.xml as a text file, but the update helped me find the dependencies that needed to be changed.
 
   ![](./images/pom_dependency_updates.png)
 
@@ -168,6 +168,8 @@ The next step is to see how far this gets us by trying to build the project.
     mvn clean package
 
 As it turns out, we hit some bumps.
+
+Remember, that I said the Eclipse Transformer doesn't really process the pom.xml for dependency management. I had to run the build a few times to clean up the dependencies.
 
 [ERROR] Failed to execute goal on project DefaultWebApplication: Could not resolve dependencies for project DefaultApplication:DefaultWebApplication:war:2.0-SNAPSHOT: Could not find artifact jakarta.persistence:jakarta.persistence-api:jar:2.2 in central (https://repo.maven.apache.org/maven2) -> [Help 1]
 
