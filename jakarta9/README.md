@@ -1,5 +1,7 @@
 # Modernizing DefaultApplication to Jakarta EE 9.1
 
+Note: This article was updated to show use of the latest binary scanner v23.0.0.1.
+
 When we first [modernized DefaultApplication](../README.md), we moved a complex, traditional WebSphere Application Server application to Liberty. In this post, we will upgrade the same application to use Jakarta EE 9.1.
 
 Here is an outline of the step-by-step process we went through to do the modernization.
@@ -114,7 +116,7 @@ Take a look at the [server.xml](../modernized/DefaultApplication-ear/src/main/li
 
 Also, looking at the binary scanner migration report which scanned for differences between Java EE 8 and Jakarta EE 9, we are warned of the Jakarta EE package rename that is required. Java EE 8 and earlier APIs use `javax` as the root of the package name. Starting with Jakarta EE 9, API packages start with `jakarta`. See the migration report rule help for more information.
 
-![](./images/WarningRules.png)
+![](./images/criticalRules.png)
 
 This is a small application, and we could easily make the package name changes manually, but the [Eclipse Transformer](https://openliberty.io/blog/2021/03/17/eclipse-transformer.html) is highly recommended to make the code changes since there are some `javax` packages that remain in Java SE. Another cool feature of the Eclipse Transformer is that you can use it to modify your source code or your application binaries. We have used the binary feature to generate Jakarta test applications. You can use the binary feature to run a quick proof of concept for your application running on Jakarta. If you are running the Eclipse Transformer on your binaries, the [transformer-maven-plugin](https://github.com/eclipse/transformer/blob/main/maven-plugins/transformer-maven-plugin/README.md) provides a better way for running the transformer with your build process.
 
@@ -233,7 +235,7 @@ As one last check, let's build the EAR file and run the binary scanner against t
 
 ![](./images/MigrationReportJakarta.png)
 
-Two of the analysis results are gone after the changes are made since we have converted the javax.transaction to jakarta and we removed the deprecated Integer constructors. The remaining issues are general in nature and will always trigger with the targets I have selected.
+Three of the analysis results are gone after the changes are made since we converted javax packages to jakarta and we removed the deprecated Integer constructors, The remaining two issues are general in nature and will always trigger with the targets I have selected.
 
 Also, the technology report shows that the application is using Jakarta EE technologies. We are on the way with Jakarta 9.1. With Jakarta 10 right around the corner, we will revisit this application with Jakarta 10 soon!
 
