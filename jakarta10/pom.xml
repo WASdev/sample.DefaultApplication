@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>DefaultApplication</groupId>
+    <artifactId>DefaultApplication-modules</artifactId>
+    <version>2.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <!-- Liberty configuration -->
+        <liberty.var.default.http.port>9080</liberty.var.default.http.port>
+        <liberty.var.default.https.port>9443</liberty.var.default.https.port>
+    </properties>
+
+    <modules>
+        <module>DefaultWebApplication</module>
+        <module>DefaultApplication-ear</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+          <groupId>org.apache.derby</groupId>
+          <artifactId>derby</artifactId>
+          <version>10.13.1.1</version>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>jakarta.platform</groupId>
+          <artifactId>jakarta.jakartaee-api</artifactId>
+          <version>10.0.0</version>
+          <scope>provided</scope>
+      </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+        <!-- Enable liberty-maven plugin -->
+            <plugin>
+                <groupId>io.openliberty.tools</groupId>
+                <artifactId>liberty-maven-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                  <runtimeArtifact>
+                    <groupId>io.openliberty.beta</groupId>
+                    <artifactId>openliberty-runtime</artifactId>
+                    <version>23.0.0.1-beta</version>
+                    <type>zip</type>
+                  </runtimeArtifact>
+                  <!-- if you want a particular Liberty version, configure it here -->
+                  <!-- assemblyArtifact>
+                    <groupId>com.ibm.websphere.appserver.runtime</groupId>
+                    <artifactId>wlp-jakartaee9</artifactId>
+                    <version>22.0.0.12</version>
+                    <type>zip</type>
+                  </assemblyArtifact -->
+                  <copyDependencies>
+                  <!-- Copies the org.apache.derby:derby:10.13.1.1 and org.apache.derby:derbyclient:10.13.1.1
+                       dependencies plus transitive dependencies which were defined in the Maven dependencies
+                       above to the lib/global/derby folder of the target server and strips the version. -->
+                    <dependencyGroup>
+                      <!-- stripVersion>true</stripVersion -->
+                      <location>lib/global/derby</location>
+                      <dependency>
+                        <groupId>org.apache.derby</groupId>
+                        <artifactId>derby*</artifactId>
+                      </dependency>
+                    </dependencyGroup>
+                  </copyDependencies>
+                </configuration>
+            </plugin>
+            <plugin>
+	            <groupId>org.codehaus.mojo</groupId>
+	            <artifactId>exec-maven-plugin</artifactId>
+	            <version>3.0.0</version>
+	            <executions>
+		            <execution>
+			            <goals>
+				            <goal>java</goal>
+			            </goals>
+		            </execution>
+	            </executions>
+	            <configuration>
+		            <includePluginDependencies>true</includePluginDependencies>
+		            <mainClass>com.ibm.ws.report.binary.cmdline.DriveScan</mainClass>
+		            <addOutputToClasspath>false</addOutputToClasspath>
+		            <arguments>
+			            <argument>${project.basedir}/DefaultApplication-ear/target/DefaultApplication.ear</argument>
+			            <argument>--all</argument>
+                  <argument>--sourceAppServer=liberty</argument>
+                  <argument>--sourceJava=java17</argument>
+			            <argument>--targetJava=java17</argument>
+                  <argument>--sourceJavaEE=ee9</argument>
+                  <argument>--targetJakartaEE=ee10</argument>
+			            <argument>--nobrowser</argument>
+                  <argument>--scanAll</argument>
+			            <argument>--output=${project.build.directory}</argument>
+		            </arguments>
+	            </configuration>
+	            <dependencies>
+		            <dependency>
+			            <groupId>com.ibm.websphere.appmod.tools</groupId>
+		 	            <artifactId>binary-app-scanner</artifactId>
+                  <version>23.0.0.1</version>
+			            <type>jar</type>
+		            </dependency>
+	            </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+</project>
