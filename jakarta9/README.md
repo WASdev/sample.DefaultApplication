@@ -237,6 +237,6 @@ As one last check, let's build the EAR file and run the binary scanner against t
 
 Three of the analysis results are gone after the changes are made since we converted javax packages to jakarta and we removed the deprecated Integer constructors, The remaining two issues are general in nature and will always trigger with the targets I have selected.
 
-Also, the technology report shows that the application is using Jakarta EE technologies. We are on the way with Jakarta 9.1. With Jakarta 10 right around the corner, we will revisit this application with Jakarta 10 soon!
+Also, the technology report shows that the application is using Jakarta EE technologies. Because of this, it can no longer run on traditional WebSphere Application Server. We are on the way with Jakarta 9.1. With Jakarta 10 right around the corner, we will revisit this application with Jakarta 10 soon!
 
 Hint, hint: A code update is needed to run on Jakarta 10!
