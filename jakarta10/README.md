@@ -27,41 +27,41 @@ We already set up the pom.xml file to run the binary scanner. In order to scan f
 
 ```xml
             <plugin>
-	              <groupId>org.codehaus.mojo</groupId>
-	              <artifactId>exec-maven-plugin</artifactId>
-	              <version>3.0.0</version>
-	              <executions>
-		                <execution>
-			                  <goals>
-				                    <goal>java</goal>
-			                  </goals>
-		                </execution>
-	              </executions>
-	              <configuration>
-		                <includePluginDependencies>true</includePluginDependencies>
-		                <mainClass>com.ibm.ws.report.binary.cmdline.DriveScan</mainClass>
-		                <addOutputToClasspath>false</addOutputToClasspath>
-		                <arguments>
-			                <argument>${project.basedir}/DefaultApplication-ear/target/DefaultApplication.ear</argument>
-			                <argument>--all</argument>
-                            <argument>--sourceAppServer=liberty</argument>
-                            <argument>--sourceJava=ibm17</argument>
-			                <argument>--targetJava=java17</argument>
-                            <argument>--sourceJavaEE=ee9</argument>
-                            <argument>--targetJakartaEE=ee10</argument>
-							<argument>--nobrowser</argument>
-							<argument>--scanAll</argument>
-			                <argument>--output=${project.build.directory}</argument>
-		                </arguments>
-	              </configuration>
-	              <dependencies>
-		                <dependency>
-			                  <groupId>com.ibm.websphere.appmod.tools</groupId>
-		 	                  <artifactId>binary-app-scanner</artifactId>
-			                  <version>22.0.0.7</version>
-			                  <type>jar</type>
-		                </dependency>
-	              </dependencies>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>exec-maven-plugin</artifactId>
+              <version>3.0.0</version>
+              <executions>
+                <execution>
+                <goals>
+                  <goal>java</goal>
+                  </goals>
+                </execution>
+              </executions>
+              <configuration>
+                <includePluginDependencies>true</includePluginDependencies>
+                <mainClass>com.ibm.ws.report.binary.cmdline.DriveScan</mainClass>
+                <addOutputToClasspath>false</addOutputToClasspath>
+                <arguments>
+                  <argument>${project.basedir}/DefaultApplication-ear/target/DefaultApplication.ear</argument>
+                  <argument>--all</argument>
+                  <argument>--sourceAppServer=liberty</argument>
+                  <argument>--sourceJava=ibm17</argument>
+                  <argument>--targetJava=java17</argument>
+                  <argument>--sourceJavaEE=ee9</argument>
+                  <argument>--targetJakartaEE=ee10</argument>
+                  <argument>--nobrowser</argument>
+                  <argument>--scanAll</argument>
+                  <argument>--output=${project.build.directory}</argument>
+                </arguments>
+              </configuration>
+              <dependencies>
+                <dependency>
+                  <groupId>com.ibm.websphere.appmod.tools</groupId>
+                  <artifactId>binary-app-scanner</artifactId>
+                  <version>22.0.0.7</version>
+                  <type>jar</type>
+                </dependency>
+              </dependencies>
             </plugin>
 
 ```
