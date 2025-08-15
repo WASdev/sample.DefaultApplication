@@ -10,8 +10,8 @@ The updated DefaultApplication ships with traditional WebSphere Application Serv
 
 There have been several phases to this modernization. Each step builds on the previous. The first step had the most code changes to convert entity EJB beans to JPA. The Jakarta 9.1 step involved changing to the Jakarta namespace by renaming the Java packages from javax to jakarta. And the final step up to Jakarta 10 had an API incompatibility that needed to be changed. 
 
-1. [Runtime modernization to Liberty](./modernized/README.md)
-2. [Modernize to Jakarta 9.1](./jakarta9/README.md)
-3. [Modernize to Jakarta 10](./jakarta10/README.md)
+1. [Runtime modernization to Liberty](./modernized/README.md) ([Prebuilt application](https://github.com/WASdev/sample.DefaultApplication/blob/main/modernized/PrebuiltApplication/DefaultApplication.ear))
+3. [Modernize to Jakarta 9.1](./jakarta9/README.md) ([Prebuilt application](https://github.com/WASdev/sample.DefaultApplication/blob/main/jakarta9/PrebuiltApplication/DefaultApplication.ear))
+5. [Modernize to Jakarta 10](./jakarta10/README.md) ([Prebuilt application](https://github.com/WASdev/sample.DefaultApplication/blob/main/jakarta10/PrebuiltApplication/DefaultApplication.ear))
 
 
