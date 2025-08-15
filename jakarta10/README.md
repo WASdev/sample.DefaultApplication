@@ -1,6 +1,6 @@
 # Modernizing DefaultApplication to Jakarta EE 10
 
-As promised in the [Jakarta 9 modernization article](../jakarta9/README.md), Jakarta 10 has arrived, and we are revisiting this DefaultApplication example. There are some small modifications needed to run using Jakarta 10.
+As promised in the [Jakarta 9 modernization article](../jakarta9/README.md), Jakarta 10 has arrived, and we are revisiting this DefaultApplication example. There are some small modifications needed to run using Jakarta 10.  If you want to use this applicaiton for testing, there is a [prebuilt application](https://github.com/WASdev/sample.DefaultApplication/blob/main/jakarta10/PrebuiltApplication/DefaultApplication.ear).
 
 Since we have already done the package renames, the process is easier this time around to move from Jakarta 9 to Jakarta 10. I also copied the code from the [jakarta9](../jakarta9) folder to the [jakarta10](../jakarta10/) folder to show this modernization separately. We will
 
