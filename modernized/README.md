@@ -9,6 +9,8 @@ The [migration report](http://htmlpreview.github.com/?https://github.com/WASdev/
 * EJB lookup strings
 * WebSphere Servlet API
 
+If you want to use this application for testing, there is a [prebuilt application](https://github.com/WASdev/sample.DefaultApplication/blob/main/modernized/PrebuiltApplication/DefaultApplication.ear).
+
 ![](./images/migration_report.png)
 
 The biggest challenge for running DefaultApplication on Liberty is Entity EJB.  The Entity EJB Java EE specification was deprecated in favor of the Java Persistence API (JPA), and Entity EJBs are not supported on Liberty.
