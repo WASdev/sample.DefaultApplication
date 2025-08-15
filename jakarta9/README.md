@@ -2,7 +2,7 @@
 
 Note: This article was updated to show use of the latest binary scanner v23.0.0.1.
 
-When we first [modernized DefaultApplication](../README.md), we moved a complex, traditional WebSphere Application Server application to Liberty. In this post, we will upgrade the same application to use Jakarta EE 9.1.
+When we first [modernized DefaultApplication](../README.md), we moved a complex, traditional WebSphere Application Server application to Liberty. In this post, we will upgrade the same application to use Jakarta EE 9.1.  If you want to use this applicaiton for testing, there is a [prebuilt application](https://github.com/WASdev/sample.DefaultApplication/blob/main/jakarta9/PrebuiltApplication/DefaultApplication.ear).
 
 Here is an outline of the step-by-step process we went through to do the modernization.
 
